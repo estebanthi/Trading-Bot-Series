@@ -19,6 +19,7 @@ class BaseStrategy(bt.Strategy):
         self.initial_cash = self.broker.cash
 
         self._init_indicators()
+        self.active = True
 
     def _init_indicators(self):
         pass
@@ -94,8 +95,12 @@ class BaseStrategy(bt.Strategy):
         self._log_total_profit()
 
     def notify_data(self, data, status, *args, **kwargs):
-        status = data._getstatusname(status)
-        print(status)
+        if status == data.LIVE:
+            self._log('Data live notification')
+            self.active = True
+        if status == data.DELAYED:
+            self._log('Data delayed notification')
+            self.active = False
 
     def notify_trade(self, trade):
         if not trade.isclosed:
@@ -116,6 +121,9 @@ class BaseStrategy(bt.Strategy):
 
     def next(self):
         self._log_iter()
+
+        if not self.active:
+            return
 
         if not self.position:
             self._not_yet_in_market()

@@ -6,6 +6,7 @@ from data_sources.yfinance import Yfinance
 
 from strategies import BracketStrategyExample
 
+
 bot = TradingBot()
 data_source = Yfinance()
 
